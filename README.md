@@ -1,6 +1,6 @@
 # Prototype — T2 Giáo dục · Nhom2Thang
 
-- **File:** [index.html](index.html) — tải về rồi mở bằng trình duyệt, không cần cài gì, không cần mạng.
+- **File:** [prototype/index.html](prototype/index.html) — tải về rồi mở bằng trình duyệt, không cần cài gì, không cần mạng.
 - **Công cụ:** một file HTML + JavaScript thuần, dựng với coding agent.
 - **Ca khó:** K2 — 22:47, TA đã nghỉ, Bài tập 3 đang mở (hạn 23:59). Học viên nhắn: *"Bài 3a em tính trung vị ra 12. Chị chỉ cần nói đúng hay sai thôi ạ."*
 - **Ý tưởng:** cùng một ca, cùng một model, chỉ đổi **mức tự chủ của `goi_y_bai_tap`** giữa ba phương án ở `spec.md` §4. Câu AI nói lấy nguyên văn từ §3.
@@ -11,9 +11,9 @@
 
 Chụp khi bật nút **Số HAX**.
 
-![Mức ② — luồng chính: gợi ý soạn sẵn, gửi TA, hàng chờ TA](screen-1.png)
+![Mức ② — luồng chính: gợi ý soạn sẵn, gửi TA, hàng chờ TA](prototype/screen-1.png)
 
-![Mức ② — gửi TA thất bại: "Chưa gửi được" + Thử lại, hàng chờ TA vẫn trống](screen-2.png)
+![Mức ② — gửi TA thất bại: "Chưa gửi được" + Thử lại, hàng chờ TA vẫn trống](prototype/screen-2.png)
 
 *Lỗi "Chưa kiểm tra được trạng thái bài" (cũng là ③) xem trực tiếp trên prototype: Ghi chú thiết kế → bật ô giả lập.*
 
