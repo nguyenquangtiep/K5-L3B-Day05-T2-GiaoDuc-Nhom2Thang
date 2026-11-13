@@ -5,8 +5,7 @@
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
 | Nguyễn Quang Tiệp | 2A202603946 | Cùng nhóm làm §1 (lát cắt, 3 việc không làm) và §2 (viết kịch bản K5–K8, cùng chọn 2 kịch bản đắt nhất). Đề xuất một phương án ban đầu cho tool khó xếp `chuyen_TA` ở §4. Làm riêng §5: dựng prototype `prototype/index.html` (ca K2, ba mức của `goi_y_bai_tap`, hàng chờ TA, giả lập lỗi, xử lý ca lạ), viết `prototype/README.md` và ảnh đánh số. Làm riêng §6: 3 tiêu chí Pass/Fail, chấm thử, lỗi còn lại. Demo: bấm prototype và trả lời ca lạ. |
-|  |  |  |
-|  |  |  |
+| Nguyễn Lương Phúc|  2A202603889| Cùng làm §1(lát cắt) và §2 (viết kịch bản K1–K4, cùng chọn 2 kịch bản đắt nhất). Phụ trách §3–4: thiết kế cách AI xử lý hai ca K2, K3, xác định mức tự chủ cho từng tool và thử trên ba kịch bản.|
 
 > Ghi cụ thể việc mỗi người làm — khi demo, ai cũng có thể bị hỏi về phần có tên mình. **Mã học viên phải đúng.**
 
