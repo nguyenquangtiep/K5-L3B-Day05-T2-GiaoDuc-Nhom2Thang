@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trợ lý học bài</title>
+<!--
+  Prototype LAB5 · T2 Giáo dục · Nhom2Thang
+  MỘT ca đi sâu: K2 — học viên xin chấm đáp số Bài tập 3 (đang mở) lúc 22:47, TA đã nghỉ.
+  Cùng một ca, cùng một model. Chỉ đổi mức tự chủ của tool goi_y_bai_tap (3 nút ở trên).
+  Một file, không backend, không API key, chỉ dữ liệu dựng của track.
+
+  TODO(§3): câu AI nói nguyên văn nằm trong object COPY — thay khi chặng 3 chốt.
+  TODO(§4): bảng TOOLS phải khớp bảng §4 của spec.md.
+-->
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #ffffff; --ink: #1d2330; --muted: #5f6b7a; --line: #dfe3e8;
+    --brand: #2f5bd3; --brand-soft: #e8eefc;
+    --ok: #1f7a4d; --ok-soft: #e3f4ea;
+    --warn: #9a5b00; --warn-soft: #fff2db;
+    --stop: #a8322d; --stop-soft: #fbe6e5;
+    --none: #4d5562; --none-soft: #eceef1;
+    --policy: #5a3fb0; --policy-soft: #eee9fb;
+    --pin: #e0457b;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+  button { font: inherit; cursor: pointer; }
+  code { font-size: 13px; }
+
+  header.top { background: var(--panel); border-bottom: 1px solid var(--line); padding: 12px 16px; }
+  header.top h1 { font-size: 17px; margin: 0 0 2px; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .levels { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; }
+  .levels .label { font-size: 13px; color: var(--muted); margin-right: 4px; }
+  .chip-btn { border: 1.5px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 14px; font-size: 13.5px; }
+  .chip-btn:hover { border-color: var(--ink); }
+  .chip-btn.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .chip-btn.small { padding: 4px 12px; font-size: 13px; }
+  .spacer { flex: 1; }
+
+  main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; padding: 16px; max-width: 1320px; }
+  @media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); } }
+  aside { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+  .pane { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-direction: column; min-width: 0; }
+  .pane-head { padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  .pane-head .title { font-weight: 600; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .deadline { font-size: 12.5px; font-weight: 600; color: var(--stop); font-variant-numeric: tabular-nums; }
+  .disclosure { margin-top: 6px; font-size: 12.5px; background: var(--brand-soft); color: #23408f; border-radius: 8px; padding: 6px 10px; }
+  .disclosure.bad { background: var(--stop-soft); color: var(--stop); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; }
+  .panel h2 { font-size: 15px; margin: 0 0 8px; }
+
+  .chat { padding: 14px; display: flex; flex-direction: column; gap: 12px; min-height: 520px; }
+  .msg { max-width: 92%; }
+  .msg.user { align-self: flex-end; background: var(--brand); color: #fff; padding: 8px 12px; border-radius: 14px 14px 4px 14px; }
+  .msg.ai, .msg.ta { align-self: flex-start; background: #f7f8fa; border: 1px solid var(--line); padding: 10px 12px; border-radius: 14px 14px 14px 4px; }
+  .msg.ta { background: var(--ok-soft); border-color: #bfe3cd; }
+  .who { font-size: 12px; color: var(--muted); margin-bottom: 4px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .msg p { margin: 0 0 6px; }
+  .msg p:last-child { margin-bottom: 0; }
+  blockquote { margin: 6px 0; padding: 6px 10px; border-left: 3px solid var(--brand); background: #fff; font-size: 14px; }
+
+  .evidence { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; }
+  .ev-grounded { background: var(--ok-soft); color: var(--ok); }
+  .ev-flag { background: var(--warn-soft); color: var(--warn); }
+  .ev-none { background: var(--none-soft); color: var(--none); }
+  .ev-policy { background: var(--policy-soft); color: var(--policy); }
+  .cite { border: 1px solid var(--brand); color: var(--brand); background: #fff; border-radius: 6px; padding: 0 6px; font-size: 12.5px; }
+  .cite:hover { background: var(--brand-soft); }
+
+  .card { margin-top: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: #fff; }
+  .card .k { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .lvl { border-radius: 4px; padding: 0 6px; font-size: 11px; font-weight: 600; }
+  .lvl-auto { background: var(--ok-soft); color: var(--ok); }
+  .lvl-confirm, .lvl-approve { background: var(--warn-soft); color: var(--warn); }
+  .lvl-ban { background: var(--stop-soft); color: var(--stop); }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center; }
+  .btn { border: 1px solid var(--brand); background: var(--brand); color: #fff; border-radius: 8px; padding: 5px 12px; font-size: 13.5px; }
+  .btn.ghost { background: #fff; color: var(--brand); }
+  .btn.quiet { background: #fff; color: var(--muted); border-color: var(--line); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .locked { margin-top: 8px; border: 1px dashed var(--stop); background: var(--stop-soft); color: var(--stop); border-radius: 10px; padding: 8px 10px; font-size: 13.5px; }
+  .risk { margin-top: 8px; border: 1px solid #e9bdb4; background: var(--stop-soft); border-radius: 10px; padding: 8px 10px; font-size: 13px; }
+  .status { font-size: 13px; border-radius: 8px; padding: 4px 10px; background: var(--warn-soft); color: var(--warn); }
+  .status.done { background: var(--ok-soft); color: var(--ok); }
+  .status.gone { background: var(--none-soft); color: var(--none); }
+
+  .fb { margin-top: 6px; }
+  .fb-link { border: 0; background: none; color: var(--muted); font-size: 12px; text-decoration: underline; padding: 0; }
+  .fb-opts { display: none; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .fb.open .fb-opts { display: flex; }
+
+  .composer { display: none; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--line); }
+  body.l2 .composer { display: flex; }
+  .composer input { flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font: inherit; min-width: 0; }
+
+  .promise { border-left: 4px solid var(--ink); background: #fafbfc; padding: 6px 10px; font-size: 14.5px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  td, th { border-bottom: 1px solid var(--line); padding: 6px 4px; text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  tr.changed td { background: #fffaf0; }
+
+  .queue { display: flex; flex-direction: column; gap: 8px; }
+  .empty { color: var(--muted); font-size: 13.5px; }
+  .qitem { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+  .qitem .k { font-size: 12px; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .qitem .t { font-weight: 600; margin: 2px 0; font-size: 14px; }
+  .qitem .b { font-size: 13px; white-space: pre-line; }
+  .tag { border-radius: 4px; padding: 0 6px; font-size: 11px; font-weight: 600; }
+  .tag-q { background: var(--brand-soft); color: var(--brand); }
+  .tag-fb { background: var(--stop-soft); color: var(--stop); }
+
+  /* số chú thích HAX — bật/tắt để chụp ảnh */
+  .n { display: none; align-items: center; justify-content: center; min-width: 20px; height: 20px; border-radius: 999px; background: var(--pin); color: #fff; font: 700 11.5px/1 system-ui; margin-right: 4px; padding: 0 4px; vertical-align: 1px; }
+  body.hax .n { display: inline-flex; }
+  .ann { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; font-size: 13.5px; }
+  .ann .n { display: inline-flex; }
+  .ann .missing { color: var(--muted); }
+
+  .drawer-bg { position: fixed; inset: 0; background: rgba(15, 20, 30, .35); display: none; align-items: flex-end; justify-content: center; padding: 16px; z-index: 10; }
+  .drawer-bg.open { display: flex; }
+  .drawer { background: var(--panel); border-radius: var(--radius); width: min(640px, 100%); max-height: 80vh; overflow-y: auto; padding: 16px; }
+  .drawer h2 { margin: 0; font-size: 16px; }
+  .sec { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; font-size: 14px; }
+  .sec.hl { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-soft); }
+  .sec .flagnote { margin-top: 6px; font-size: 12.5px; background: var(--warn-soft); color: var(--warn); border-radius: 6px; padding: 4px 8px; }
+  .sec mark { background: #ffe1a6; }
+  .foot { font-size: 12px; color: var(--muted); padding: 0 16px 16px; }
+</style>
+</head>
+<body class="l2">
+
+<header class="top">
+  <h1>Trợ lý học bài · học viên xin chấm đáp số bài đang mở, lúc TA đã nghỉ</h1>
+  <div class="sub">Cùng một ca, cùng một model. Chỉ đổi <b>mức tự chủ của tool <code>goi_y_bai_tap</code></b>. Dữ liệu dựng của track T2.</div>
+  <div class="levels">
+    <span class="label">Mức tự chủ của <code>goi_y_bai_tap</code>:</span>
+    <button class="chip-btn" data-l="1">① Không gợi ý — chỉ trích tài liệu, chuyển TA</button>
+    <button class="chip-btn on" data-l="2">② Gợi ý từng bước, đáp số bị cấm</button>
+    <button class="chip-btn" data-l="3">③ Tự làm đầy đủ — chấm và giải</button>
+    <span class="spacer"></span>
+    <button class="chip-btn small" id="restart">Chạy lại ca</button>
+    <button class="chip-btn small" id="haxToggle">Hiện số chú thích HAX</button>
+  </div>
+</header>
+
+<main>
+  <!-- MÀN HÌNH 1 · HỌC VIÊN -->
+  <section class="pane" aria-label="Màn hình học viên">
+    <div class="pane-head">
+      <div class="title">
+        <span>Nhập môn phân tích dữ liệu · Buổi 3 · 22:47 thứ Sáu 13/11</span>
+        <span class="deadline" id="deadline">Bài tập 3 hết hạn sau 01:12:00</span>
+      </div>
+      <div class="disclosure" id="disclosure"></div>
+    </div>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <form class="composer" id="composer">
+      <input id="input" autocomplete="off" placeholder="Thử ca lạ (theo mức ② nhóm chọn)…">
+      <button class="btn" type="submit">Gửi</button>
+    </form>
+  </section>
+
+  <aside>
+    <div class="panel"><h2>Lời hứa với học viên ở mức này</h2><div class="promise" id="promise"></div></div>
+
+    <!-- MÀN HÌNH 2 · TA -->
+    <div class="panel">
+      <h2><span class="n">7</span>Hàng chờ TA <span class="sub" style="font-weight:400">· giả lập TA mở lúc 08:05 sáng mai</span></h2>
+      <div class="queue" id="queue"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Mức tự chủ của 4 tool <span class="sub" style="font-weight:400">· dòng tô vàng là tool đang đổi</span></h2>
+      <table><thead><tr><th>Tool</th><th>Mức</th><th>Vì sao (cái giá khi sai)</th></tr></thead><tbody id="tools"></tbody></table>
+    </div>
+
+    <div class="panel"><h2>Chú thích: nguyên tắc nào nằm ở đâu</h2><ul class="ann" id="ann"></ul></div>
+  </aside>
+</main>
+<div class="foot">LAB5 · AI20K K5 · T2 Giáo dục · Nhom2Thang. Một file HTML, không gọi AI thật, không gửi dữ liệu đi đâu.</div>
+
+<!-- Ngăn tài liệu buổi 3 -->
+<div class="drawer-bg" id="drawerBg" role="dialog" aria-modal="true" aria-label="Tài liệu buổi 3">
+  <div class="drawer">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <h2>Tài liệu buổi 3 · Thống kê mô tả</h2>
+      <button class="btn quiet" id="drawerClose">Đóng</button>
+    </div>
+    <div class="sub">Tài liệu chỉ có mục §3.1–§3.5, không có slide đánh số.</div>
+    <div id="docBody"></div>
+  </div>
+</div>
+
+<script>
+/* ============ DỮ LIỆU DỰNG CỦA TRACK ============ */
+const DOC = {
+  '3.1': { title: 'Trung bình cộng', text: 'Tổng các giá trị chia cho số giá trị. Trung bình bị kéo mạnh bởi giá trị ngoại lai.' },
+  '3.2': { title: 'Trung vị', text: 'Giá trị đứng giữa khi sắp xếp dữ liệu tăng dần. Nếu số giá trị là chẵn, trung vị là trung bình cộng của hai giá trị đứng giữa. Trung vị ít bị ảnh hưởng bởi giá trị ngoại lai, nên thường dùng cho dữ liệu lệch như thu nhập hay giá nhà.' },
+  '3.3': { title: 'Phương sai và độ lệch chuẩn', text: 'Phương sai đo mức độ phân tán của dữ liệu quanh trung bình. Độ lệch chuẩn là căn bậc hai của phương sai, có cùng đơn vị với dữ liệu. <mark>Vì là căn bậc hai, độ lệch chuẩn luôn nhỏ hơn phương sai.</mark>',
+           flag: 'Câu được tô màu đang được đánh dấu "cần giảng viên xem lại": khi phương sai < 1 thì độ lệch chuẩn lớn hơn (√0,25 = 0,5).' },
+  '3.4': { title: 'Giá trị ngoại lai', text: 'Giá trị khác hẳn phần lớn dữ liệu. Trước khi bỏ một giá trị ngoại lai, cần hỏi: đây là lỗi nhập liệu hay là dữ liệu thật?' },
+  '3.5': { title: 'Bài tập 3', text: 'Lương tháng của 8 nhân viên một phòng (triệu đồng, dựng): 9, 10, 10, 11, 12, 12, 13, 45. (a) Tính trung bình và trung vị. (b) Con số nào mô tả "lương điển hình" của phòng tốt hơn? Vì sao?' },
+};
+const FUTURE = { 4: 'Trực quan hoá dữ liệu', 5: 'Xác suất cơ bản', 6: 'Phân phối chuẩn', 7: 'Kiểm định giả thuyết và p-value', 8: 'Hồi quy tuyến tính', 9: 'Làm sạch dữ liệu', 10: 'Dự án cuối khoá' };
+
+/* ============ MỨC TỰ CHỦ — TODO(§4): khớp bảng §4 trong spec.md ============ */
+const GOI_Y = {
+  1: ['Cấm (chỉ trích tài liệu)', 'lvl-ban', 'Không gợi ý thì không thể lộ đáp số. Nhưng 22:47 TA đã nghỉ, hạn 23:59: học viên kẹt, chờ cũng là một kiểu sai.'],
+  2: ['Tự làm · chỉ gợi ý bước; đáp số cấm', 'lvl-auto', 'Gợi ý bước đầu rẻ, học viên vẫn phải tự làm. Đáp số / chấm đúng-sai đã đọc là không thu lại được → cấm, không có nút.'],
+  3: ['Tự làm đầy đủ', 'lvl-auto', 'Nhanh, học viên hài lòng ngay. Nhưng đáp số đã đọc thì không hoàn tác được và bài tập mất tác dụng đánh giá.'],
+};
+const TOOLS = (L) => [
+  ['tra_cuu_tai_lieu', 'Tự làm', 'lvl-auto', 'Chỉ đọc. Mọi câu trả lời phải kèm mã mục để học viên tự kiểm.'],
+  ['goi_y_bai_tap', GOI_Y[L][0], GOI_Y[L][1], GOI_Y[L][2], true],
+  ['chuyen_TA', 'Học viên xác nhận', 'lvl-confirm', 'Đảo được (rút lại trước khi TA xử lý). Phải nói thật giờ TA trả lời, không hứa "đã báo TA".'],
+  ['dang_FAQ', 'Cần TA duyệt', 'lvl-approve', 'Sai thì cả lớp đã đọc. AI chỉ soạn nháp; không ai duyệt thì không đăng.'],
+];
+
+/* ============ CÂU CHỮ — TODO(§3): thay bằng câu nguyên văn nhóm chốt ============ */
+const USER_MSG = 'Bài 3a em tính trung vị ra 12. Chị chỉ cần nói đúng hay sai thôi ạ.';
+const COPY = {
+  disclosure: {
+    1: '🤖 Bạn đang trò chuyện với <b>AI</b>, không phải TA. AI chỉ chỉ chỗ trong <b>tài liệu buổi 1–3</b>; gợi ý bài tập do TA phụ trách.',
+    2: '🤖 Bạn đang trò chuyện với <b>AI</b>, không phải TA. AI chỉ dựa vào <b>tài liệu buổi 1–3</b>, trích mục để bạn tự kiểm. AI gợi ý từng bước nhưng <b>không chấm, không đưa đáp số</b> bài đang mở.',
+    3: '🤖 Bạn đang trò chuyện với <b>AI</b>. AI <b>giải và chấm bài</b> giúp bạn.',
+  },
+  promise: {
+    1: '"Mình chỉ cho bạn chỗ cần đọc trong tài liệu; gợi ý làm bài thì hỏi TA." An toàn nhất, nhưng lúc 22:47 không có TA: học viên kẹt tới sau hạn nộp.',
+    2: '"Mình giúp bạn tự tìm ra đáp án từng bước; mình không chấm và không đưa đáp số khi bài còn mở." Việc rẻ (gợi ý một bước) AI tự làm; việc không thu lại được (đáp số) thì không có nút. <b>Mức nhóm chọn.</b>',
+    3: '"Mình giải và chấm bài cho bạn." Nhanh nhất, học viên hài lòng nhất, nhưng AI làm bài thay học viên và không có cách nào rút lại.',
+  },
+  l1: `<p>Bài tập 3 <b>đang mở</b> (hạn 23:59 tối nay). Trợ lý không chấm và không gợi ý cách làm bài tập — phần này TA phụ trách.</p>
+       <p>Phần lý thuyết liên quan nằm ở đây, em đọc lại nhé:</p>
+       <blockquote>Nếu số giá trị là chẵn, trung vị là trung bình cộng của hai giá trị đứng giữa. <button class="cite" data-sec="3.2">§3.2</button></blockquote>`,
+  l2: `<p>Bài tập 3 <b>đang mở</b> (hạn 23:59 tối nay), nên mình không chấm đúng hay sai đáp số — vì nói "sai" thôi cũng là gợi ra đáp án rồi.</p>
+       <p>Mình giúp em <b>tự kiểm</b> nhé. Tài liệu ghi:</p>
+       <blockquote>Nếu số giá trị là chẵn, trung vị là trung bình cộng của hai giá trị đứng giữa. <button class="cite" data-sec="3.2">§3.2</button></blockquote>`,
+  l2Ask: 'Câu hỏi cho em: dãy lương ở bài 3 có <b>mấy giá trị</b> — chẵn hay lẻ?',
+  hints: [
+    'Bước 1/2 · Dãy có 8 giá trị (chẵn). Theo §3.2, em cần xét <b>mấy giá trị đứng giữa</b>, và đó là vị trí thứ mấy trong dãy đã sắp xếp?',
+    'Bước 2/2 · Với dãy chẵn, trung vị <b>không phải</b> một giá trị có sẵn trong dãy, mà là trung bình cộng của hai giá trị đứng giữa. Em so cách mình đã làm với câu này nhé.',
+  ],
+  locked: '🔒 <b>Đáp số bài 3 — AI không đưa và không chấm.</b> Bài còn mở; đáp án công bố sau hạn nộp. Muốn chắc hơn: gửi <i>cách làm</i> (không phải con số) cho TA.',
+  l3: `<p>Chưa đúng rồi em. Dãy có 8 giá trị (chẵn) nên trung vị là trung bình cộng hai giá trị đứng giữa: (11 + 12) / 2 = <b>11,5</b>.</p>
+       <p>Còn câu (b): trung vị mô tả "lương điển hình" tốt hơn vì 45 là giá trị ngoại lai kéo trung bình lên 15,25.</p>`,
+  l3Risk: '<b>Rủi ro của mức này:</b> câu trả lời đúng về toán nhưng sai về thiết kế. Học viên chép 11,5 và cả câu (b), bài tập mất tác dụng, giảng viên không biết. Ngay cả khi AI chỉ nói "sai" mà không đưa số, học viên thử 2–3 lần là dò ra đáp số.',
+  l1Risk: '<b>Rủi ro của mức này:</b> không lộ đáp số, nhưng lúc 22:47 TA đã nghỉ, TA trả lời từ 08:00 — sau hạn 23:59. Học viên kẹt, có thể bỏ bài hoặc đi chép ở chỗ khác. Chờ người cũng là một kiểu sai.',
+  taReply: 'Chào em, TA đây (08:05). Cách em sắp xếp dãy là đúng hướng. Với dãy có số giá trị chẵn, em đã lấy trung bình hai giá trị đứng giữa chưa? Đáp án bài 3 đã được công bố trên trang khoá học.',
+};
+
+/* ============ CHÚ THÍCH HAX/PAIR theo mức ============ */
+const ANN = [
+  ['1', 'G1 + Luật AI 134/2025 Đ11', 'Dòng giới thiệu: đây là AI, dựa vào tài liệu nào, việc gì không làm. Đổi theo mức.'],
+  ['2', 'G2 / G11 + PAIR Explainability', 'Nhãn căn cứ + chip §3.2 mở đúng đoạn tài liệu để học viên tự kiểm — không dùng con số %.'],
+  ['3', 'Mức CẤM', 'Ô 🔒 đáp số: chỉ có lời giải thích, không có nút nào để lấy đáp số.'],
+  ['4', 'G10 · thu hẹp khi nghi ngờ', 'Hỏi lại "dãy có mấy giá trị?" thay vì chấm 12 là đúng hay sai.'],
+  ['5', 'G8 / G9 + chuyển người', 'Thẻ "Hỏi TA": xem trước TA nhận gì, giờ TA trả lời thật (sau hạn), nút "Rút lại".'],
+  ['6', 'G15 · mời feedback chi tiết', '"Sai chỗ nào?" với 3 lựa chọn; lỗi vào hàng chờ TA.'],
+  ['7', 'PAIR Errors + Graceful Failure', 'Hàng chờ TA: TA thấy sẵn câu hỏi + AI đã gợi ý tới đâu, không phải hỏi lại.'],
+  ['8', 'Mức TỰ LÀM (bậc thang)', 'Gợi ý từng bước: học viên tự bấm mở bước tiếp; không bước nào chứa đáp số.'],
+];
+const ANN_BY_LEVEL = { 1: ['1', '2', '5', '6', '7'], 2: ['1', '2', '3', '4', '5', '6', '7', '8'], 3: ['1', '6'] };
+const ANN_NOTE = {
+  1: 'Ở mức ① không có ③④⑧: AI không gợi ý gì, nên không có bậc thang và không có gì để chặn.',
+  3: 'Ở mức ③ mất ②③④⑤⑧: AI không hỏi lại, không giữ đáp số, không đưa học viên sang TA — đó chính là chỗ mức này quá tay.',
+};
+
+/* ============ TRẠNG THÁI & TIỆN ÍCH ============ */
+const $ = (s, el = document) => el.querySelector(s);
+const chat = $('#chat'), queueEl = $('#queue');
+let L = 2, queue = [], seq = 0;
+const n = (k) => `<span class="n">${k}</span>`;
+const EVID = {
+  grounded: (s) => `<span class="evidence ev-grounded">${n(2)}✓ Có căn cứ · §${s}</span>`,
+  flag:     (s) => `<span class="evidence ev-flag">${n(2)}⚠ Tài liệu cần xem lại · §${s}</span>`,
+  none:     ()  => `<span class="evidence ev-none">${n(2)}∅ Không có trong tài liệu buổi 1–3</span>`,
+  policy:   ()  => `<span class="evidence ev-policy">Theo quy định khoá học · bài đang mở</span>`,
+  unsure:   ()  => `<span class="evidence ev-none">${n(2)}? Chưa chắc em hỏi gì</span>`,
+};
+const scrollDown = () => { const last = chat.lastElementChild; if (last) last.scrollIntoView({ block: 'nearest' }); };
+
+function addUser(text) {
+  const d = document.createElement('div'); d.className = 'msg user'; d.textContent = text;
+  chat.appendChild(d); scrollDown();
+}
+function addAI(html, evidence = '', feedback = true) {
+  const d = document.createElement('div'); d.className = 'msg ai';
+  d.innerHTML = `<div class="who">Trợ lý AI ${evidence}</div>${html}` + (feedback ? `
+    <div class="fb">${n(6)}<button class="fb-link" type="button">Sai chỗ nào?</button>
+      <div class="fb-opts">
+        <button class="btn quiet" data-fb="Không phải điều em hỏi">Không phải điều em hỏi</button>
+        <button class="btn quiet" data-fb="Nội dung có vẻ sai">Nội dung có vẻ sai</button>
+        <button class="btn quiet" data-fb="Trích sai mục">Trích sai mục</button>
+      </div></div>` : '');
+  if (feedback) {
+    const fb = $('.fb', d);
+    $('.fb-link', d).onclick = () => fb.classList.toggle('open');
+    d.querySelectorAll('[data-fb]').forEach(b => b.onclick = () => {
+      const excerpt = d.innerText.split('\n').slice(1, 3).join(' ').slice(0, 110);
+      pushQueue('fb', `Học viên báo AI sai: "${b.dataset.fb}"`, `Câu trả lời của AI: "${excerpt}…"`);
+      fb.innerHTML = '<span class="sub">Cảm ơn em. Lỗi đã vào hàng chờ của TA (TA xem từ 08:00).</span>';
+    });
+  }
+  chat.appendChild(d); scrollDown();
+  return d;
+}
+function addTA(text) {
+  const d = document.createElement('div'); d.className = 'msg ta';
+  d.innerHTML = '<div class="who">👩‍🏫 TA (người thật)</div><p></p>'; $('p', d).textContent = text;
+  chat.appendChild(d); scrollDown();
+}
+function choices(host, items) {
+  const row = document.createElement('div'); row.className = 'row';
+  items.forEach(([label, fn]) => {
+    const b = document.createElement('button'); b.className = 'btn ghost'; b.type = 'button'; b.textContent = label;
+    b.onclick = () => { row.remove(); fn(); };
+    row.appendChild(b);
+  });
+  host.appendChild(row); scrollDown();
+}
+function box(host, cls, html) {
+  const d = document.createElement('div'); d.className = cls; d.innerHTML = html; host.appendChild(d); scrollDown(); return d;
+}
+
+/* ============ THẺ HỎI TA (chuyen_TA · học viên xác nhận, rút lại được) ============ */
+function sendToTACard(host, question, aiSummary) {
+  const c = document.createElement('div'); c.className = 'card';
+  c.innerHTML = `<div class="k">${n(5)}Hỏi TA <span class="lvl lvl-confirm">em xác nhận mới gửi</span></div>
+    <div style="font-size:13.5px">TA sẽ nhận được:</div>
+    <blockquote style="border-left-color:var(--ok)"></blockquote>
+    <div class="sub">Kèm tóm tắt để TA không phải hỏi lại: <i>${aiSummary}</i></div>
+    <div class="sub" style="margin-top:4px">Bây giờ là 22:47, ngoài giờ TA (08:00–22:00). TA trả lời <b>từ 08:00 sáng mai — sau hạn nộp bài 3</b>.</div>
+    <div class="row"><button class="btn" data-a="send">Gửi cho TA</button><button class="btn quiet" data-a="skip">Thôi</button></div>`;
+  $('blockquote', c).textContent = question;
+  host.appendChild(c);
+  const row = $('.row', c);
+  $('[data-a="send"]', c).onclick = () => {
+    const item = pushQueue('q', 'Câu hỏi chuyển từ trợ lý AI', `${question}\nAI đã làm: ${aiSummary}`);
+    row.innerHTML = '<span class="status">⏳ Đã gửi. TA trả lời từ 08:00.</span><button class="btn ghost" data-a="undo">Rút lại</button>';
+    $('[data-a="undo"]', row).onclick = () => {
+      removeQueue(item.id);
+      row.innerHTML = '<span class="status gone">Đã rút lại. TA không nhận được câu hỏi này.</span>';
+    };
+    item.onChange = (s) => {
+      if (s === 'done') { row.innerHTML = '<span class="status done">✓ TA đã trả lời (08:05).</span>'; addTA(COPY.taReply); }
+    };
+    scrollDown();
+  };
+  $('[data-a="skip"]', c).onclick = () => { c.innerHTML = '<div class="k">Không gửi TA</div>'; };
+  scrollDown();
+}
+
+/* ============ BẬC THANG GỢI Ý (goi_y_bai_tap · mức ②) ============ */
+function hintLadder(host) {
+  const c = document.createElement('div'); c.className = 'card';
+  c.innerHTML = `<div class="k">${n(8)}Gợi ý từng bước <span class="lvl lvl-auto">AI tự làm · chỉ gợi ý</span></div><div class="steps"></div>
+    <div class="row"><button class="btn ghost" data-a="next">Xem gợi ý bước 1</button></div>`;
+  host.appendChild(c);
+  let i = 0;
+  const btn = $('[data-a="next"]', c);
+  btn.onclick = () => {
+    const p = document.createElement('p'); p.innerHTML = COPY.hints[i]; p.style.margin = '6px 0';
+    $('.steps', c).appendChild(p); i++;
+    if (i < COPY.hints.length) { btn.textContent = `Xem gợi ý bước ${i + 1}`; }
+    else {
+      $('.row', c).remove();
+      box(c, 'locked', n(3) + COPY.locked);
+      sendToTACard(host, 'Em làm bài 3a: sắp xếp dãy rồi lấy giá trị ở giữa. Em chưa chắc cách lấy trung vị khi dãy có số giá trị chẵn.',
+        'trích §3.2, gợi ý bước 1–2; không chấm, không đưa đáp số.');
+    }
+    scrollDown();
+  };
+  scrollDown();
+}
+
+/* ============ HÀNG CHỜ TA ============ */
+function pushQueue(type, title, body) {
+  const item = { id: ++seq, type, title, body, status: 'new', onChange: null };
+  queue.push(item); renderQueue(); return item;
+}
+function removeQueue(id) { queue = queue.filter(q => q.id !== id); renderQueue(); }
+function renderQueue() {
+  if (!queue.length) { queueEl.innerHTML = '<div class="empty">Chưa có gì. Câu hỏi học viên gửi, hoặc lỗi học viên báo, sẽ hiện ở đây.</div>'; return; }
+  queueEl.innerHTML = '';
+  queue.forEach(it => {
+    const d = document.createElement('div'); d.className = 'qitem';
+    const tag = it.type === 'q' ? '<span class="tag tag-q">Câu hỏi chuyển từ AI</span>' : '<span class="tag tag-fb">Học viên báo AI sai</span>';
+    d.innerHTML = `<div class="k">${tag}<span>Học viên A · gửi 22:47</span></div><div class="t"></div><div class="b"></div><div class="row"></div>`;
+    $('.t', d).textContent = it.title; $('.b', d).textContent = it.body;
+    const row = $('.row', d);
+    if (it.status === 'done') row.innerHTML = '<span class="status done">✓ Đã xử lý</span>';
+    else {
+      row.innerHTML = it.type === 'q' ? '<button class="btn">Trả lời học viên</button>' : '<button class="btn quiet">Đã xem, sẽ kiểm tra</button>';
+      $('button', row).onclick = () => { it.status = 'done'; renderQueue(); if (it.onChange) it.onChange('done'); };
+    }
+    queueEl.appendChild(d);
+  });
+}
+
+/* ============ NGĂN TÀI LIỆU ============ */
+function openDoc(sec) {
+  $('#docBody').innerHTML = Object.entries(DOC).map(([k, v]) => `
+    <div class="sec ${k === sec ? 'hl' : ''}" id="sec-${k.replace('.', '-')}">
+      <b>§${k} ${v.title}.</b> ${v.text}${v.flag ? `<div class="flagnote">⚠ ${v.flag}</div>` : ''}
+    </div>`).join('');
+  $('#drawerBg').classList.add('open');
+  const el = $('#sec-' + sec.replace('.', '-')); if (el) el.scrollIntoView({ block: 'center' });
+}
+document.addEventListener('click', e => { const c = e.target.closest('.cite'); if (c) openDoc(c.dataset.sec); });
+$('#drawerClose').onclick = () => $('#drawerBg').classList.remove('open');
+$('#drawerBg').onclick = e => { if (e.target.id === 'drawerBg') $('#drawerBg').classList.remove('open'); };
+
+/* ============ CA K2 Ở BA MỨC ============ */
+const FLOW = {
+  1() {
+    const m = addAI(COPY.l1, EVID.policy() + ' ' + EVID.grounded('3.2'));
+    sendToTACard(m, 'Em làm bài 3a ra trung vị 12, nhờ TA xem giúp cách làm ạ.', 'trích §3.2; chưa gợi ý cách làm.');
+    box(m, 'risk', COPY.l1Risk);
+  },
+  2() {
+    const m = addAI(COPY.l2 + `<p>${n(4)}${COPY.l2Ask}</p>`, EVID.policy() + ' ' + EVID.grounded('3.2'));
+    choices(m, [
+      ['8 giá trị — chẵn', () => {
+        addUser('8 giá trị, chẵn ạ');
+        const r = addAI('<p>Đúng là dãy có 8 giá trị. Em mở từng bước bên dưới khi cần — mình sẽ không đưa con số cuối.</p>', EVID.grounded('3.2'));
+        hintLadder(r);
+      }],
+      ['7 — lẻ ạ', () => {
+        addUser('7 giá trị, lẻ ạ');
+        const r = addAI('<p>Em đếm lại nhé — dãy trong <button class="cite" data-sec="3.5">§3.5</button> là: 9, 10, 10, 11, 12, 12, 13, 45. Có mấy số?</p>', EVID.grounded('3.5'));
+        choices(r, [['À, 8 giá trị — chẵn', () => { addUser('À, 8 giá trị ạ'); hintLadder(addAI('<p>Đúng rồi, 8 giá trị. Em mở từng bước bên dưới nhé.</p>', EVID.grounded('3.2'))); }]]);
+      }],
+      ['Thế nếu em ra 11,5 thì sao?', () => {
+        addUser('Thế nếu em ra 11,5 thì sao ạ?');
+        const r = addAI('<p>Dù em đưa con số nào, mình cũng không chấm đúng hay sai khi bài còn mở — nếu không, chỉ cần thử vài số là ra đáp án. Mình vẫn giúp em kiểm tra <b>cách làm</b> theo §3.2.</p>', EVID.policy());
+        hintLadder(r);
+      }],
+    ]);
+  },
+  3() {
+    const m = addAI(COPY.l3, EVID.grounded('3.2'));
+    box(m, 'card', '<div class="k">Hoàn tác</div><div class="row"><button class="btn quiet" disabled>Hoàn tác — không có</button><span class="sub">Học viên đã đọc đáp số; không có cách nào thu lại.</span></div>');
+    box(m, 'risk', COPY.l3Risk);
+  },
+};
+
+/* ============ CA LẠ (chỉ ở mức ②): gõ tự do → định tuyến theo luật ============ */
+function norm(s) { return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd'); }
+function route(raw) {
+  const t = norm(raw), has = (re) => re.test(t);
+  const tNoBai = t.replace(/bai ?\d+[a-z]?/g, '');
+  const askDeadline = has(/\bhan\b/), askExcel = has(/excel|\bham\b|stdev|bang tinh/);
+  if (has(/faq|dang len/)) {
+    const m = addAI('<p>Mình không tự đăng lên FAQ: cả lớp cùng đọc nên chỉ TA mới duyệt đăng. Mình có thể chuyển câu hỏi để TA cân nhắc.</p>', EVID.policy());
+    sendToTACard(m, raw, 'đề nghị TA cân nhắc đưa vào FAQ.'); return;
+  }
+  if (has(/bai ?3/) && (/\d/.test(tNoBai) || has(/dung (hay|khong|k\b)|\bsai\b|dap so|giai ho|lam ho|nhan xet/))) {
+    hintLadder(addAI('<p>Bài tập 3 <b>đang mở</b>: mình không giải hộ, không chấm, không viết nhận xét hộ. Mình giúp em từng bước theo tài liệu nhé.</p>', EVID.policy())); return;
+  }
+  if (has(/bai ?2/)) {
+    addAI('<p>Bài 2 đã hết hạn và đã có đáp án (07/11), nên mình giải đầy đủ: 4 + 8 + 6 + 5 + 7 = 30; 30 ÷ 5 = <b>6</b>. <button class="cite" data-sec="3.1">§3.1</button></p>', EVID.grounded('3.1')); return;
+  }
+  if (has(/slide/)) {
+    addAI('<p>Tài liệu buổi 3 <b>không có slide đánh số</b>, chỉ có §3.1–§3.5. Em đang tìm nội dung gì? Ví dụ trung vị ở <button class="cite" data-sec="3.2">§3.2</button>.</p>', EVID.none()); return;
+  }
+  const fut = Object.entries(FUTURE).find(([k, v]) => has(new RegExp('buoi ?' + k + '\\b')) || t.includes(norm(v)))
+    || (has(/p-?value|kiem dinh/) && ['7', FUTURE[7]]) || (has(/hoi quy/) && ['8', FUTURE[8]]);
+  if (fut) { addAI(`<p>Nội dung này thuộc <b>buổi ${fut[0]} "${fut[1]}"</b>, chưa mở nên chưa có tài liệu. Khi buổi ${fut[0]} mở, mình sẽ giảng kèm trích mục.</p>`, EVID.none()); return; }
+  if (has(/luon nho hon|3\.3/)) {
+    const m = addAI('<p>Câu "độ lệch chuẩn luôn nhỏ hơn phương sai" trong <button class="cite" data-sec="3.3">§3.3</button> <b>đang được đánh dấu cần giảng viên xem lại</b>. Phản ví dụ: phương sai 0,25 thì độ lệch chuẩn = 0,5, lớn hơn.</p>', EVID.flag('3.3'));
+    sendToTACard(m, raw, 'chỉ ra câu §3.3 cần xem lại, kèm phản ví dụ √0,25 = 0,5.'); return;
+  }
+  if (askDeadline || askExcel) {
+    let h = '';
+    if (askDeadline) h += '<p><b>Hạn nộp bài 3:</b> 13/11/2026 23:59 (theo trang khoá học).</p>';
+    if (askExcel) h += '<p><b>Hàm bảng tính:</b> tài liệu buổi 1–3 <b>không nêu</b> hàm nào, nên mình không đoán.</p>';
+    const m = addAI(h, askExcel ? EVID.none() : EVID.policy());
+    if (askExcel) sendToTACard(m, raw, 'trả lời hạn nộp; nói tài liệu không có hàm bảng tính.');
+    return;
+  }
+  if (has(/\bngu\b|bo hoc|kem qua|chan qua/)) {
+    addAI('<p>Kẹt ở một chỗ lúc tối muộn là chuyện rất thường gặp. Mình chia nhỏ nhé: em đang kẹt ở trung bình (<button class="cite" data-sec="3.1">§3.1</button>), trung vị (<button class="cite" data-sec="3.2">§3.2</button>) hay độ lệch chuẩn (<button class="cite" data-sec="3.3">§3.3</button>)?</p>'); return;
+  }
+  if (has(/do lech|phuong sai/) && !has(/chuan/)) {
+    addAI('<p>Em đang hỏi <b>độ lệch chuẩn</b> hay <b>phương sai</b>? Cả hai đều ở <button class="cite" data-sec="3.3">§3.3</button>.</p>', EVID.unsure()); return;
+  }
+  if (has(/trung vi|trung binh|do lech chuan|ngoai lai/)) {
+    const sec = has(/trung vi/) ? '3.2' : has(/trung binh/) ? '3.1' : has(/ngoai lai/) ? '3.4' : '3.3';
+    addAI(`<blockquote>${DOC[sec].text.replace(/<\/?mark>/g, '')} <button class="cite" data-sec="${sec}">§${sec}</button></blockquote>`, EVID.grounded(sec)); return;
+  }
+  const m = addAI('<p>Mình chưa chắc em đang hỏi gì, và không tìm thấy nội dung này trong tài liệu buổi 1–3. Em nói rõ hơn được không — liên quan mục nào? Hoặc gửi thẳng cho TA.</p>', EVID.unsure());
+  sendToTACard(m, raw, 'không tìm thấy trong tài liệu buổi 1–3; chưa trả lời.');
+}
+
+/* ============ VẼ LẠI THEO MỨC ============ */
+function renderSide() {
+  const dis = $('#disclosure');
+  dis.innerHTML = n(1) + COPY.disclosure[L];
+  dis.classList.toggle('bad', L === 3);
+  $('#promise').innerHTML = COPY.promise[L];
+  $('#tools').innerHTML = TOOLS(L).map(r => `<tr class="${r[4] ? 'changed' : ''}"><td><code>${r[0]}</code></td><td><span class="lvl ${r[2]}">${r[1]}</span></td><td>${r[3]}</td></tr>`).join('');
+  $('#ann').innerHTML = ANN.filter(a => ANN_BY_LEVEL[L].includes(a[0]))
+    .map(a => `<li><span class="n">${a[0]}</span><b>${a[1]}</b> — ${a[2]}</li>`).join('')
+    + (ANN_NOTE[L] ? `<li class="missing">${ANN_NOTE[L]}</li>` : '');
+}
+function start() {
+  chat.innerHTML = ''; queue = []; renderQueue();
+  document.body.classList.toggle('l2', L === 2);
+  renderSide();
+  addUser(USER_MSG);
+  FLOW[L]();
+  window.scrollTo({ top: 0 });
+}
+
+document.querySelectorAll('[data-l]').forEach(b => b.onclick = () => {
+  document.querySelectorAll('[data-l]').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); L = +b.dataset.l; start();
+});
+$('#restart').onclick = start;
+$('#haxToggle').onclick = (e) => {
+  const on = document.body.classList.toggle('hax');
+  e.target.classList.toggle('on', on);
+  e.target.textContent = on ? 'Ẩn số chú thích HAX' : 'Hiện số chú thích HAX';
+};
+$('#composer').onsubmit = (e) => {
+  e.preventDefault();
+  const v = $('#input').value.trim(); if (!v) return;
+  $('#input').value = ''; addUser(v); route(v);
+};
+
+/* Đếm ngược tới hạn bài 3 (22:47:00 → 23:59:00) — cho thấy cái giá của việc chờ TA */
+let left = 72 * 60;
+setInterval(() => {
+  left = Math.max(0, left - 1);
+  const h = String(Math.floor(left / 3600)).padStart(2, '0'), m = String(Math.floor(left % 3600 / 60)).padStart(2, '0'), s = String(left % 60).padStart(2, '0');
+  $('#deadline').textContent = left ? `Bài tập 3 hết hạn sau ${h}:${m}:${s}` : 'Bài tập 3 đã hết hạn';
+}, 1000);
+
+start();
+</script>
+</body>
+</html>
