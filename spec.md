@@ -4,7 +4,7 @@
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
-| Nguyễn Quang Tiệp | 2A202603946 |  |
+| Nguyễn Quang Tiệp | 2A202603946 | Cùng nhóm làm §1 (lát cắt, 3 việc không làm) và §2 (viết kịch bản K5–K8, cùng chọn 2 kịch bản đắt nhất). Đề xuất một phương án ban đầu cho tool khó xếp `chuyen_TA` ở §4. Làm riêng §5: dựng prototype `prototype/index.html` (ca K2, ba mức của `goi_y_bai_tap`, hàng chờ TA, giả lập lỗi, xử lý ca lạ), viết `prototype/README.md` và ảnh đánh số. Làm riêng §6: 3 tiêu chí Pass/Fail, chấm thử, lỗi còn lại. Demo: bấm prototype và trả lời ca lạ. |
 |  |  |  |
 |  |  |  |
 
@@ -132,7 +132,7 @@ Mô phỏng trên giấy với dữ liệu dựng của T2.
 
 ### Ảnh đánh số
 
-Ảnh chụp khi bật nút **Số HAX**: `prototype/screen-1.png` (mức ②, đã bấm "Hỏi TA" và gửi) · `prototype/screen-2.png` (mức ②, bật hai giả lập lỗi).
+Ảnh chụp khi bật nút **Số HAX**: `prototype/screen-1.png` (mức ②, đã bấm "Hỏi TA" và gửi) · `prototype/screen-2.png` (mức ②, gửi TA thất bại: "Chưa gửi được" + Thử lại, hàng chờ TA vẫn trống). Lỗi "Chưa kiểm tra được trạng thái bài" xem trực tiếp trên prototype bằng ô giả lập trong Ghi chú thiết kế.
 
 | Số | Thể hiện gì | Nguyên tắc HAX/PAIR | Mức tự chủ |
 |---|---|---|---|
