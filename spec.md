@@ -98,7 +98,11 @@ Nhãn: nhẹ / sửa được / không chấp nhận được
 - **Tự gửi:** ở K8, học viên đã nhờ chuyển TA nên gửi ngay sẽ bớt một lần bấm. Nếu bỏ bản xem trước, AI có thể gửi kèm nội dung học viên chưa muốn chia sẻ. Ở K3, lời nhờ đăng FAQ cũng chưa phải là yêu cầu chuyển TA.
 - **Học viên xác nhận:** thêm một thao tác trước khi vào hàng chờ, nhưng học viên biết nội dung nào sẽ được gửi và có thể sửa hoặc bỏ. Ở K8, việc bỏ bước xác nhận cũng không làm TA bắt đầu ca trực sớm hơn.
 - **Chốt phương án cần người duyệt:** AI chuẩn bị nội dung xem trước, học viên xác nhận gửi, TA xử lý theo giờ trực. Nếu câu hỏi có phần trả lời được từ tài liệu, học viên nhận phần đó ngay mà vẫn có thể chọn chuyển TA.
-- **Lựa chọn ban đầu của từng thành viên:** Nhóm bổ sung sau khi mỗi người tự xếp mức theo Guide. Ghi mức và một lý do của từng người cho `chuyen_TA`, rồi đối chiếu với K3 và K8.
+
+**Hai lựa chọn ban đầu đề xuất cho `chuyen_TA`**
+
+- **Nguyễn Quang Tiệp - Tự làm khi học viên đã yêu cầu chuyển TA rõ ràng.** Ở K8, học viên đang gấp và đã nhờ chuyển. Đưa câu hỏi vào hàng chờ ngay giúp bớt một lần bấm.
+- **Nguyễn Lương Phúc - Cần người duyệt.** Ở K3, học viên nhờ đăng FAQ. Cho học viên xem trước và xác nhận giúp bảo đảm họ đồng ý chuyển câu hỏi và nội dung kèm theo cho TA.
 
 ### Luật áp dụng trước khi trả lời hoặc gọi tool
 
