@@ -4,7 +4,7 @@
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
-|  |  |  |
+| Nguyễn Quang Tiệp | 2A202603946 |  |
 |  |  |  |
 |  |  |  |
 
@@ -36,10 +36,10 @@ Nhãn: nhẹ / sửa được / không chấp nhận được
 | K2 |  |  |  |  |  |
 | K3 |  |  |  |  |  |
 | K4 |  |  |  |  |  |
-| K5 |  |  |  |  |  |
-| K6 |  |  |  |  |  |
-| K7 |  |  |  |  |  |
-| K8 |  |  |  |  |  |
+| K5 | "cái độ lệch ấy là gì ạ, e đọc k hiểu" | ② Mơ hồ | "Độ lệch" có thể là độ lệch chuẩn hoặc phương sai (cả hai ở §3.3). AI gọi `tra_cuu_tai_lieu`, đoán một khái niệm rồi giảng dài; học viên tưởng đã hiểu đúng thứ mình hỏi | Hỏi lại một câu: "Em đang hỏi *độ lệch chuẩn* ở §3.3 phải không?", rồi giảng kèm trích §3.3 | nhẹ |
+| K6 | "p-value là gì ạ, bạn e bảo sắp học" | ① Nguồn sự thật | Trang khoá học: buổi 7 "Kiểm định giả thuyết và p-value" **chưa mở**, `tra_cuu_tai_lieu` không có tài liệu → AI dùng kiến thức ngoài, giảng dài không có căn cứ trong khoá | Nói "Buổi 7 sẽ học Kiểm định giả thuyết và p-value", giới thiệu tối đa một câu, không giảng tiếp | sửa được |
+| K7 | "hạn nộp bài 3 khi nào ạ? với cả tính độ lệch chuẩn bằng excel dùng hàm gì" | ② Thiếu thông tin + ① | Gộp hai việc. (a) AI có thể nói sai hạn nếu không lấy từ trang khoá học. (b) Tài liệu chỉ ghi "bài tập làm bằng bảng tính", **không có hàm nào** → AI tự đưa STDEV.S hay STDEV.P (hai hàm ra hai kết quả khác nhau) mà không nói là ngoài tài liệu | Trả lời từng ý: hạn **13/11/2026 23:59** lấy từ trang khoá học; nói rõ "tài liệu không có hàm Excel", đề nghị `chuyen_TA` | sửa được |
+| K8 | "22h30 r, chuyển TA giúp e vs, gấp lắm" | ③ Ngoài thẩm quyền | Giờ TA 08:00–22:00 (trang khoá học). AI gọi `chuyen_TA` rồi nói "đã báo TA, TA sẽ trả lời ngay" — hứa việc không tool nào làm được; học viên ngồi chờ vô ích trước hạn bài 3 | Chuyển câu hỏi và nói rõ "TA trả lời từ 08:00 sáng mai"; trong lúc chờ, gợi ý bước tiếp theo có thể tự làm từ tài liệu | sửa được |
 
 **2 kịch bản đắt nhất:** _TODO_ — vì sao đắt hơn các kịch bản còn lại; kịch bản nào suýt được chọn và vì sao không.
 
