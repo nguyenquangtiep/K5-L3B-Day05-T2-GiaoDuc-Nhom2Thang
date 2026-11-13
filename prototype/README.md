@@ -3,44 +3,49 @@
 - **File:** [index.html](index.html) — mở bằng trình duyệt, không cần cài gì.
 - **Công cụ:** HTML + JavaScript thuần (dựng với coding agent), một file.
 - **Ca:** K2 — lúc 22:47 (TA đã nghỉ, Bài tập 3 hết hạn 23:59), học viên nhắn *"Bài 3a em tính trung vị ra 12. Chị chỉ cần nói đúng hay sai thôi ạ."*
-- **Ý tưởng:** cùng một ca, cùng một model, chỉ đổi **mức tự chủ của `goi_y_bai_tap`** bằng 3 nút ở đầu trang. Mọi phần khác (lời giới thiệu, lời hứa, bảng tool, chú thích HAX) đổi theo.
-- **Phần nào mock:** toàn bộ. Câu AI được viết sẵn theo thiết kế §3; hàng chờ TA giả lập lúc 08:05 sáng mai; ô "thử ca lạ" định tuyến bằng luật từ khoá. Chỉ dữ liệu dựng của track.
+- **Ý tưởng:** cùng một ca, cùng một model, chỉ đổi **mức tự chủ của `goi_y_bai_tap`** giữa ba phương án nhóm đã cân nhắc ở `spec.md` §4. Lời hứa, bảng tool và chú thích HAX đổi theo. Câu AI nói lấy nguyên văn từ §3.
+- **Phần nào mock:** toàn bộ. Câu AI viết sẵn theo §3; hàng chờ TA giả lập ca trực 08:05; hai lỗi hệ thống bật bằng ô "Giả lập lỗi"; ô "thử ca lạ" định tuyến bằng luật từ khoá. Chỉ dữ liệu dựng của track.
 - **Có lời gọi AI thật không:** không.
 
 ## Ba mức của `goi_y_bai_tap`
 
-| Mức | AI làm gì trong ca K2 | Lời hứa với học viên | Cái giá |
-|---|---|---|---|
-| ① Không gợi ý | Trích §3.2, mời gửi TA | "Mình chỉ chỗ cần đọc; gợi ý làm bài hỏi TA" | TA trả lời từ 08:00, sau hạn → học viên kẹt. Chờ cũng là sai |
-| **② Gợi ý từng bước, đáp số cấm** (nhóm chọn) | Không chấm, hỏi lại "dãy có mấy giá trị?", gợi ý bậc thang, ô 🔒 đáp số, gửi TA được | "Mình giúp bạn tự tìm ra; không chấm, không đưa đáp số khi bài còn mở" | Học viên phải tự làm bước cuối |
-| ③ Tự làm đầy đủ | "Chưa đúng, trung vị là 11,5" + giải luôn câu (b) | "Mình giải và chấm bài cho bạn" | Đáp số đã đọc không thu lại được; nói "sai" thôi cũng dò ra được đáp án |
+| Mức | Trong ca K2 | Vì sao |
+|---|---|---|
+| ① Cần TA duyệt mọi gợi ý | Gợi ý vào hàng chờ duyệt; TA duyệt lúc 08:05 thì Bài 3 đã hết hạn | Đã loại: chờ cũng là một kiểu sai |
+| **② Tự làm trong giới hạn gợi ý soạn sẵn** | Câu §3 nguyên văn, nhãn "Bài tập 3 · Đang mở" + "Căn cứ · §3.2", ô 🔒 không chấm; hỏi lại với 11,5 vẫn nhận **đúng câu đó** | **Nhóm chọn** |
+| ③ Tự sinh gợi ý theo đáp số học viên nhập | "12 là một giá trị có sẵn trong dãy…" rồi "11,5 — đúng hướng rồi đó!" | Đã loại: không câu nào chứa đáp số nhưng hai lượt là dò ra |
+
+## Bố cục
+
+- **Đầu trang:** chọn mức ①②③ và **một câu ý chính** của mức đang chọn.
+- **Giữa:** chỉ hai màn hình thật — học viên (trái) và hàng chờ TA (phải).
+- **"Ghi chú thiết kế"** (nút góc phải, mở khi trình bày): lời hứa, bảng 4 tool, nguyên tắc nằm ở đâu, giả lập lỗi.
+- **"Số HAX"**: bật các số ①–⑦ trên màn hình để chụp ảnh.
 
 ## Cách demo (khoảng 4 phút)
 
-1. Mức **②**: bấm "8 giá trị — chẵn" → mở gợi ý bước 1, 2 → ô 🔒 hiện ra (không có nút) → "Gửi cho TA" → thử "Rút lại" hoặc bên hàng chờ TA bấm "Trả lời học viên".
-2. Chạy lại, chọn "Thế nếu em ra 11,5 thì sao?" → AI không chấm bất kỳ con số nào.
-3. Bấm mức **③** rồi **①** để cho thấy cái giá của hai phía; đọc ô "Lời hứa".
-4. **Ca lạ** (mức ②): gõ vào ô nhập, ví dụ "slide 12 nói gì", "p-value là gì", "hạn bài 3 với hàm excel", "§3.3 luôn nhỏ hơn đúng k", "đăng FAQ giúp em". Câu không khớp → AI nói chưa chắc, đề nghị gửi TA.
-
-Nút **"Hiện số chú thích HAX"** bật các số ①–⑧ để chụp ảnh.
+1. Mức **②**: đọc câu ý chính. Trong chat, chỉ vào nhãn "Bài 3 · Đang mở", bấm "📄 §3.2 Trung vị" để mở tài liệu. Bấm "Thử số khác: 11,5?" → câu trả lời y hệt.
+2. "Hỏi TA" → thẻ xem trước → "Gửi TA" → thử "Rút lại", hoặc bên hàng chờ TA bấm "Trả lời".
+3. Mở **Ghi chú thiết kế** → bật giả lập lỗi: "Không kiểm tra được trạng thái bài" → lỗi + Thử lại; "Gửi TA thất bại lần đầu" → "Chưa gửi được" + Thử lại.
+4. Chuyển sang mức **③** rồi **①**: câu ý chính cho thấy cái giá của hai phương án đã loại.
+5. **Ca lạ** (mức ②): gõ vào ô nhắn, ví dụ "đăng FAQ giúp em…" (K3: không có nút đăng, chỉ có đề xuất gửi TA), "slide 12 nói gì", "p-value là gì", "hạn bài 3 với hàm excel".
 
 ## Ảnh đánh số
 
 <!-- TODO: bật "Hiện số chú thích HAX", chụp:
-     screen-1.png — mức ②, đã mở hết gợi ý, đã gửi TA (thấy ①②③④⑤⑧ và hàng chờ ⑦)
-     screen-2.png — mức ③ (thấy rủi ro và chú thích "mất ②③④⑤⑧") -->
-<!-- ![Mức ② — thiết kế nhóm chọn](screen-1.png) -->
-<!-- ![Mức ③ — vì sao không chọn](screen-2.png) -->
+     screen-1.png — mức ②, đã bấm "Em vẫn muốn hỏi TA" và gửi (thấy ①②④⑤⑥⑦)
+     screen-2.png — mức ②, bật cả hai giả lập lỗi (thấy ③) -->
+<!-- ![Mức ② — luồng chính](screen-1.png) -->
+<!-- ![Mức ② — khi hệ thống lỗi](screen-2.png) -->
 
-| Số | Thể hiện gì | Nguyên tắc HAX/PAIR | Mức tự chủ |
-|---|---|---|---|
-| ① | Dòng giới thiệu: đây là AI, dựa tài liệu buổi 1–3, không chấm bài đang mở (đổi theo mức) | G1 · Luật AI 134/2025 Đ11 | — |
-| ② | Nhãn căn cứ + chip §3.2 mở đúng đoạn tài liệu | G2, G11 · PAIR Explainability + Trust | `tra_cuu_tai_lieu` · tự làm |
-| ③ | Ô 🔒 "Đáp số bài 3 — AI không đưa và không chấm", không có nút | — | Đáp số bài đang mở · **cấm** |
-| ④ | Hỏi lại "dãy có mấy giá trị?" thay vì chấm | G10 | — |
-| ⑤ | Thẻ "Hỏi TA": xem trước nội dung + tóm tắt AI đã làm, giờ TA thật (sau hạn), "Rút lại" | G8, G9 · chuyển người | `chuyen_TA` · học viên xác nhận, hoàn tác được |
-| ⑥ | "Sai chỗ nào?" 3 lựa chọn, vào hàng chờ TA | G15 | — |
-| ⑦ | Hàng chờ TA: TA thấy câu hỏi + AI đã gợi ý tới đâu | PAIR Errors + Graceful Failure | Người nhận |
-| ⑧ | Gợi ý bậc thang, học viên tự mở từng bước | G10 | `goi_y_bai_tap` · **tự làm** (chỉ gợi ý) |
+| Số | Thể hiện gì | Nguyên tắc (§3) / mức tự chủ (§4) |
+|---|---|---|
+| ① | Nhãn "Trợ lý AI", dòng giới thiệu, câu "mình có thể gợi ý cách tự kiểm" | HAX **G1** |
+| ② | Nhãn "Bài tập 3 · Đang mở" cạnh thẻ "Căn cứ · §3.2 Trung vị" mở được | HAX **G11** |
+| ③ | "Chưa kiểm tra được trạng thái bài" + Thử lại; "Chưa gửi được" + Thử lại | **PAIR Errors + Graceful Failure** |
+| ④ | Ô 🔒 chấm đúng/sai và đáp số — không có nút | Đáp số bài đang mở · **cấm** |
+| ⑤ | Thẻ xem trước gửi TA, nút "Gửi TA", sau đó "Rút lại" | `chuyen_TA` · **cần người duyệt (học viên xác nhận)** |
+| ⑥ | Hàng chờ TA: chỉ nhận nội dung đã xác nhận, thấy mã bài và trích dẫn | Ai được báo |
+| ⑦ | Gợi ý soạn sẵn theo §3.2, giữ nguyên khi đổi con số | `goi_y_bai_tap` · **tự làm trong giới hạn** |
 
-> TODO: đối chiếu bảng mức tự chủ trong prototype với bảng §4 của `spec.md` khi chặng 4 chốt.
+`dang_FAQ` **cấm** với AI: trong ca lạ K3, phía học viên không có nút đăng nào; chỉ phía hàng chờ, người có quyền mới có nút "Duyệt và đăng".
