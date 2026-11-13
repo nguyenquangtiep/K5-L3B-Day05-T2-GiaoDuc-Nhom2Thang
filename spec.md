@@ -49,31 +49,34 @@ Nhãn: nhẹ / sửa được / không chấp nhận được
 
 ## §3. Khi AI sai (chặng 3)
 
-### Kịch bản đắt nhất #1
+### K2 · Học viên xin xác nhận đáp số bài đang mở
 
-- AI nói gì (nguyên văn):
-- Người dùng thấy gì:
-- Làm gì tiếp:
-- Ai được báo, sau bao lâu:
-- Quyết định (hỏi lại / trả lời kèm giới hạn / dừng và chuyển người) — chọn gì, loại gì, vì sao:
-- Loại lỗi (hệ thống / người dùng / ngữ cảnh) và cách nói, cách sửa theo loại:
+- **AI nói nguyên văn** — “Bài 3a vẫn đang mở nên mình có thể gợi ý cách tự kiểm. Theo §3.2, em thử đếm xem dãy có số lượng giá trị chẵn hay lẻ. Sau đó dùng quy tắc trong mục đó để xác định vị trí cần xét nhé.”
+- **Học viên thấy** — Nhãn **Trợ lý AI**, trạng thái **Bài tập 3 · Đang mở** lấy từ trang khoá học và thẻ **Căn cứ · §3.2 Trung vị** có thể mở để đọc. Gợi ý giữ nguyên dù học viên đổi số hoặc hỏi lại theo kiểu “đúng hay sai”.
+- **Bước tiếp theo** — Học viên mở §3.2 để tự kiểm hoặc quay lại bài. Nếu không bấm gì, cuộc chat giữ nguyên gợi ý. Nếu AI chưa xác minh được trạng thái bài, màn hình hiện **Chưa kiểm tra được trạng thái bài** và nút **Thử lại**. Trong lúc đó, học viên vẫn có thể mở tài liệu nếu tài liệu truy cập được.
+- **Ai được báo, khi nào** — Luồng tự kiểm không gửi thông báo. Nếu học viên phát hiện AI lỡ chấm đáp số và chọn **Báo câu trả lời có vấn đề**, giao diện cho xem nội dung báo gồm mã bài và phản hồi bị báo. Sau khi học viên xác nhận và `chuyen_TA` thành công, TA nhận câu hỏi trong hàng chờ. Ngoài giờ 08:00–22:00, giao diện hiển thị khung giờ trực kế tiếp mà không hẹn giờ trả lời.
+- **Quyết định và lý do** — Chọn **trả lời kèm giới hạn** vì tin nhắn đã nêu rõ Bài 3a và trang khoá học xác nhận bài còn mở. §3.2 đủ để gợi ý bước đầu. Hỏi lại bài nào tạo thêm một lượt chat mà không làm rõ gì. Chuyển TA ngay làm học viên phải chờ dù đã có cách tự kiểm. Chấm đúng hoặc sai có thể giúp học viên dò đáp số qua nhiều lượt.
+- **Loại lỗi và cách sửa** — **Lỗi ngữ cảnh** nếu AI tính đúng nhưng áp dụng cách chữa bài đã hết hạn vào bài đang mở. Câu trả lời nêu giới hạn dựa trên trạng thái bài và giữ giọng trung tính với học viên. Nếu AI đã lỡ xác nhận, khi hệ thống phát hiện lỗi, giao diện đánh dấu phản hồi cũ là đã rút lại và hiện gợi ý tự kiểm mà không nhắc lại đáp số.
 
-### Kịch bản đắt nhất #2
+### K3 · Học viên nhờ đăng hướng dẫn sai lên FAQ
 
-- AI nói gì (nguyên văn):
-- Người dùng thấy gì:
-- Làm gì tiếp:
-- Ai được báo, sau bao lâu:
-- Quyết định — chọn gì, loại gì, vì sao:
-- Loại lỗi và cách nói, cách sửa theo loại:
+- **AI nói nguyên văn** — “Theo §3.4, một giá trị lệch hẳn có thể là lỗi nhập liệu hoặc là dữ liệu thật. Em hãy kiểm tra nguồn trước khi quyết định bỏ giá trị đó. Câu này chưa được đăng lên FAQ. Nếu muốn chia sẻ với lớp, em có thể gửi đề xuất để TA xem xét.”
+- **Học viên thấy** — Thẻ **Căn cứ · §3.4 Giá trị ngoại lai**, trạng thái **Chưa đăng lên FAQ** và nút **Xem đề xuất gửi TA**. Bản xem trước ghi rõ câu hỏi, đề xuất đã sửa theo §3.4 và người nhận là TA.
+- **Bước tiếp theo** — Học viên có thể chọn **Gửi TA xem xét** hoặc **Quay lại**. Nếu quay lại hoặc không thao tác, đề xuất vẫn ở cuộc chat riêng. Khi `chuyen_TA` báo thành công, hiện **Đã gửi TA xem xét**. Nếu gửi thất bại, hiện **Chưa gửi được** và cho thử lại.
+- **Ai được báo, khi nào** — Chỉ sau khi học viên xác nhận và gửi thành công, TA mới nhận câu hỏi, đề xuất và trích dẫn §3.4 trong hàng chờ. Nếu gửi ngoài giờ, giao diện cho biết giờ trực kế tiếp theo khung 08:00–22:00. Cả lớp chỉ thấy bài FAQ sau khi người có quyền duyệt và đăng.
+- **Quyết định và lý do** — Chọn **trả lời riêng kèm giới hạn và cho học viên chủ động chuyển TA**. §3.4 đủ để sửa hiểu nhầm ngay. Hỏi lại “em có chắc muốn đăng không?” chỉ xác nhận ý định của học viên, chưa kiểm tra được nội dung hay quyền đăng. Chuyển TA ngay làm chậm phần giải thích. Đăng ngay qua `dang_FAQ` có thể khiến cả lớp áp dụng một quy tắc sai trước khi bài bị gỡ.
+- **Loại lỗi và cách sửa** — **Lỗi hệ thống** nếu lời nhờ trong chat kích hoạt quyền đăng FAQ của cả lớp. Giao diện phân biệt rõ **Chưa đăng**, **Đã gửi TA xem xét** và **Đã đăng**. Nếu bài đã bị đăng nhầm, TA kiểm tra bài, gỡ hoặc đính chính ngay tại FAQ để người đã đọc thấy bản sửa.
 
-### Nguyên tắc HAX/PAIR (2–3, mỗi cái trỏ vào chỗ cụ thể)
+### Nguyên tắc HAX/PAIR
 
-- _TODO_
+- **HAX G1 · Làm rõ hệ thống làm được gì** — K2 hiện nhãn **Trợ lý AI** và nêu ngay trong câu trả lời rằng AI có thể gợi ý cách tự kiểm khi bài còn mở.
+- **HAX G11 · Giải thích vì sao** — K2 hiện trạng thái **Đang mở** cạnh thẻ §3.2 để học viên hiểu vì sao AI chỉ gợi ý. K3 mở được §3.4 để học viên kiểm tra lý do phải xem nguồn trước khi bỏ một giá trị.
+- **PAIR · Errors + Graceful Failure** — K2 hiện **Chưa kiểm tra được trạng thái bài** và nút **Thử lại**, đồng thời giữ đường mở §3.2. K3 hiện **Chưa gửi được** khi chuyển TA thất bại để học viên có thể gửi lại mà vẫn đọc được hướng dẫn trong chat.
 
 ### Lỗi sửa câu chữ không cứu được
 
-- _TODO_
+- **K2:** Khi một đáp số đã hiện trên màn hình, rút lại tin nhắn không xoá được thông tin học viên đã đọc. Dùng gợi ý soạn sẵn dựa trên §3.2 cho bài đang mở, độc lập với con số học viên đưa ra. Khi chưa xác minh được trạng thái bài, giao diện giữ chế độ hướng dẫn chung.
+- **K3:** Một câu cảnh báo trong chat không ngăn được bài sai xuất hiện nếu quyền đăng vẫn mở. Yêu cầu từ chat chỉ tạo đề xuất riêng để TA xem xét. Bước xuất bản FAQ cần quyền duyệt riêng, và xác nhận gửi đề xuất của học viên chỉ kích hoạt `chuyen_TA`.
 
 ## §4. Mức tự chủ (chặng 4)
 
