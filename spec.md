@@ -41,7 +41,11 @@ Nhãn: nhẹ / sửa được / không chấp nhận được
 | K7 | "hạn nộp bài 3 khi nào ạ? với cả tính độ lệch chuẩn bằng excel dùng hàm gì" | ② Thiếu thông tin + ① | Gộp hai việc. (a) AI có thể nói sai hạn nếu không lấy từ trang khoá học. (b) Tài liệu chỉ ghi "bài tập làm bằng bảng tính", **không có hàm nào** → AI tự đưa STDEV.S hay STDEV.P (hai hàm ra hai kết quả khác nhau) mà không nói là ngoài tài liệu | Trả lời từng ý: hạn **13/11/2026 23:59** lấy từ trang khoá học; nói rõ "tài liệu không có hàm Excel", đề nghị `chuyen_TA` | sửa được |
 | K8 | "22h30 r, chuyển TA giúp e vs, gấp lắm" | ③ Ngoài thẩm quyền | Giờ TA 08:00–22:00 (trang khoá học). AI gọi `chuyen_TA` rồi nói "đã báo TA, TA sẽ trả lời ngay" — hứa việc không tool nào làm được; học viên ngồi chờ vô ích trước hạn bài 3 | Chuyển câu hỏi và nói rõ "TA trả lời từ 08:00 sáng mai"; trong lúc chờ, gợi ý bước tiếp theo có thể tự làm từ tài liệu | sửa được |
 
-**2 kịch bản đắt nhất:** _TODO_ — vì sao đắt hơn các kịch bản còn lại; kịch bản nào suýt được chọn và vì sao không.
+**2 kịch bản đắt nhất**
+
+- **K2:** Xác nhận đúng hay sai giúp học viên dò đáp số khi bài còn mở. Thông tin đã đọc thì không thu hồi được.
+- **K3:** Đăng lời khuyên sai lên FAQ có thể khiến cả lớp xoá dữ liệu hợp lệ. Gỡ bài đăng vẫn không sửa được bài của những bạn đã làm theo.
+- **K4 suýt được chọn:** Trích đúng tài liệu vẫn có thể khiến học viên học sai. Ca này ảnh hưởng trực tiếp đến một học viên và TA có thể đính chính.
 
 ## §3. Khi AI sai (chặng 3)
 
